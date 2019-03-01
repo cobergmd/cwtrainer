@@ -1,0 +1,13 @@
+.learn_display {
+  font-size: 10em;
+  color: transparent;
+  text-shadow: 0 0 0 #2196f3;
+  text-transform: uppercase;
+}
+
+.learn_display.correct {
+    background-color: lightgreen;
+}
+.learn_display.incorrect {
+    background-color: lightcoral
+}

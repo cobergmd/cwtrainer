@@ -2,20 +2,55 @@ window.onload = function () {
     var audio = new (window.AudioContext || window.webkitAudioContext)();
     var cwtester = new cw(audio);
 
-    document.querySelector('button').addEventListener('mousedown', function () {
-        audio.resume().then(() => {
-            cwtester.start('the cat in the hat');
-        });
-    });
-
-    document.onkeypress = function (evt) {
-        audio.resume().then(() => {
+    document.querySelector('#learn_button').addEventListener('click', function () {
+        document.querySelector('#learn_button').setAttribute('disabled', 'disabled');
+        document.querySelector('#listen_button').removeAttribute('disabled');
+        document.onkeypress = function (evt) {
             var e = evt || window.event;
             var charCode = e.keyCode || e.which;
             var charStr = String.fromCharCode(charCode);
-            cwtester.start(charStr);
+            var charDisplay = document.querySelector('.learn_display');
+            charDisplay.innerHTML = charStr;
+            if (charStr === cwtester.currentString) {
+                charDisplay.classList.remove('incorrect');
+                charDisplay.classList.add('correct');
+            } else {
+                charDisplay.classList.remove('correct');
+                charDisplay.classList.add('incorrect');
+            }
+        };
+    });
+    document.querySelector('#listen_button').addEventListener('click', function () {
+        document.querySelector('#listen_button').setAttribute('disabled', 'disabled');
+        document.querySelector('#learn_button').removeAttribute('disabled');
+        document.onkeypress = null;
+    });
+
+    document.querySelector('#listen_start_button').addEventListener('mousedown', function () {
+        audio.resume().then(() => {
+            cwtester.start();
+            cwtester.load('the cat in the hat');
         });
-    };
+    });
+    document.querySelector('#listen_stop_button').addEventListener('mousedown', function () {
+        cwtester.stop();
+    });
+
+    document.querySelector('#learn_replay_button').addEventListener('click', function () {
+        cwtester.replay();
+    });
+    document.querySelector('#learn_next_button').addEventListener('click', function () {
+        var charDisplay = document.querySelector('.learn_display');
+        charDisplay.innerHTML = '';
+        charDisplay.classList.remove('incorrect');
+        charDisplay.classList.remove('correct');
+
+        var testChar = cwtester.generateChar();
+        audio.resume().then(() => {
+            cwtester.start();
+            cwtester.load(testChar);
+        });
+    });
 };
 
 var cw = function(audio) {
@@ -73,7 +108,6 @@ var cw = function(audio) {
     this.timerWorker = new Worker('/timerworker.js');
     this.timerWorker.onmessage = function (e) {
         if (e.data == 'tick') {
-            console.log('tick!');
             this.schedule();
         }
         else {
@@ -88,14 +122,19 @@ var cw = function(audio) {
 };
 
 cw.prototype = {
-    start: function(string) {
-        this.bufferEndTime = this.context.currentTime;
-        this.currentString = string;
-        this.currentChar = 0;
+    start: function() {
         this.timerWorker.postMessage('start');
     },
     stop: function() {
         this.timerWorker.postMessage('stop');
+    },
+    replay: function() {
+        this.load(this.currentString);
+    },
+    load: function(string) {
+        this.bufferEndTime = this.context.currentTime;
+        this.currentChar = 0;
+        this.currentString = string;
     },
     schedule: function() {
         var time = this.context.currentTime;
@@ -104,11 +143,11 @@ cw.prototype = {
             for (var i = 0; i < 5 && this.currentString.length > this.currentChar; i++) {
                 buffer += this.currentString[this.currentChar++];
             }
-            this.playChar(440, buffer);
+            this.buffer(440, buffer);
             buffer = '';
         }
     },
-    playChar: function(freq, buffer) {
+    buffer: function(freq, buffer) {
         var osc = this.context.createOscillator();
         osc.type = 'sine';
         var starttime = this.bufferEndTime;  // maybe push out a small amount?
@@ -121,7 +160,7 @@ cw.prototype = {
         for (var j = 0; j < buffer.length; j++) {
             var code = this.codes[buffer[j]];
             if (code) {
-                console.log('play ' + buffer[j] + ' at ' + starttime);
+                //console.log('play ' + buffer[j] + ' at ' + starttime);
                 for (var i = 0; i < code.length; i++) {
                     var c = code[i];
                     if (c === '.') {
@@ -143,7 +182,7 @@ cw.prototype = {
                 starttime += this.unit * 3;
             }
         }
-        osc.stop(starttime);
+        osc.stop(starttime + 0.0023);
         this.bufferEndTime = starttime;
     },
     draw: function() {
@@ -151,6 +190,11 @@ cw.prototype = {
 
         var t = document.getElementById('decodeDisplay').innerText;
         document.getElementById('decodeDisplay').innerText = t + code +  ' ';
+    },
+    generateChar: function() {
+        var len = Object.keys(this.codes).length;
+        var idx = Math.floor(Math.random() * len) + 1;
+        return Object.keys(this.codes)[idx];
     }
 };
 

@@ -212,7 +212,6 @@ cw.prototype = {
     loadWordData: function() {
         var result = '';
         var request = new XMLHttpRequest();
-        //request.open('GET', 'https://craigoberg.com/api/home/words/random', true);
         request.open('GET', 'http://192.168.1.7:5000/api/home/words/random', true);
         request.responseType = 'text';
 

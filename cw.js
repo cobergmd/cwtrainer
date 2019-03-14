@@ -45,11 +45,14 @@ window.onload = function () {
         charDisplay.classList.remove('incorrect');
         charDisplay.classList.remove('correct');
 
-        var testChar = cwtester.generateChar();
-        audio.resume().then(() => {
-            cwtester.start();
-            cwtester.load(testChar);
-        });
+        var codeType = document.querySelector('input[name="codesize"]:checked').value;
+        cwtester.generateRandomTone(codeType);
+    });
+    document.querySelector('#learn_answer_button').addEventListener('click', function () {
+        var charDisplay = document.querySelector('.learn_display');
+        charDisplay.innerHTML = cwtester.currentString;
+        charDisplay.classList.remove('incorrect');
+        charDisplay.classList.remove('correct');
     });
 };
 
@@ -191,10 +194,35 @@ cw.prototype = {
         var t = document.getElementById('decodeDisplay').innerText;
         document.getElementById('decodeDisplay').innerText = t + code +  ' ';
     },
-    generateChar: function() {
-        var len = Object.keys(this.codes).length;
-        var idx = Math.floor(Math.random() * len) + 1;
-        return Object.keys(this.codes)[idx];
+    generateRandomTone: function(type) {
+        var toneChar = '';
+        if (type === 'character') {
+            var len = Object.keys(this.codes).length;
+            var idx = Math.floor(Math.random() * len) + 1;
+            toneChar = Object.keys(this.codes)[idx];
+            this.context.resume().then(() => {
+                this.start();
+                this.load(toneChar);
+            });        }
+        else if (type === 'word') {
+            this.loadWordData();
+        }
+
+    },
+    loadWordData: function() {
+        var result = '';
+        var request = new XMLHttpRequest();
+        //request.open('GET', 'https://craigoberg.com/api/home/words/random', true);
+        request.open('GET', 'http://192.168.1.7:5000/api/home/words/random', true);
+        request.responseType = 'text';
+
+        request.onload = function () {
+            result = request.response;
+            this.context.resume().then(() => {
+                this.start();
+                this.load(result);
+            });        }.bind(this);
+        request.send();
     }
 };
 

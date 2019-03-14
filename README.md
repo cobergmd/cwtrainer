@@ -1,3 +1,4 @@
-# cwtrainer
-CW Trainer
-Messing around with the Web Audio API
+# CW Training and Listening Web Application
+CW (Morse Code) Trainer
+
+Just an excuse to mess around with the Web Audio API

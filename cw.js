@@ -35,7 +35,9 @@ window.onload = function () {
     document.querySelector('#listen_stop_button').addEventListener('mousedown', function () {
         cwtester.stop();
     });
-
+    document.querySelector('#learn_loop_button').addEventListener('mousedown', function () {
+        cwtester.loop();
+    });
     document.querySelector('#learn_replay_button').addEventListener('click', function () {
         cwtester.replay();
     });
@@ -133,6 +135,8 @@ cw.prototype = {
     },
     replay: function() {
         this.load(this.currentString);
+    },
+    loop: function() {
     },
     load: function(string) {
         this.bufferEndTime = this.context.currentTime;

@@ -16,11 +16,11 @@ ext.Format=JSON
 ```bash
 stardog-admin virtual add vehicles.properties
 ```
-4. Run the following command to query the Virtual Graph:
+5. Run the following command to query the Virtual Graph:
 ```bash
 stardog query <db> "select * from <virtual://vehicles> where { ?vehicle a <http://api.stardog.com/vehicles> . ?vehicle <http://api.stardog.com/vehicles#features> ?features . }"
 ```
-5. You should have gotten the following results:
+6. You should have gotten the following results:
 
 ```console
 +---------------------------------------+----------------------------------+

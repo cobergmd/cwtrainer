@@ -3,7 +3,7 @@ CW (Morse Code) Trainer
 
 Just an excuse to mess around with the Web Audio API
 
-2. Copy the following into a file called vehicles.properties and adjust the file path for vehicles.json as necessary:
+1. Copy the following into a file called vehicles.properties and adjust the file path for vehicles.json as necessary:
 
 ```properties
 jdbc.driver=cdata.jdbc.rest.RESTDriver
@@ -12,15 +12,15 @@ ext.URI=/change/this/path/vehicles.json
 ext.DataModel=Relational
 ext.Format=JSON
 ```
-3. Run the following command to create a Virtual Graph for the JSON document:
+1. Run the following command to create a Virtual Graph for the JSON document:
 ```bash
 stardog-admin virtual add vehicles.properties
 ```
-5. Run the following command to query the Virtual Graph:
+1. Run the following command to query the Virtual Graph:
 ```bash
 stardog query <db> "select * from <virtual://vehicles> where { ?vehicle a <http://api.stardog.com/vehicles> . ?vehicle <http://api.stardog.com/vehicles#features> ?features . }"
 ```
-6. You should have gotten the following results:
+1. You should have gotten the following results:
 
 ```console
 +---------------------------------------+----------------------------------+

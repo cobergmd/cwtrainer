@@ -13,12 +13,10 @@ ext.DataModel=Relational
 ext.Format=JSON
 ```
 3. Run the following command to create a Virtual Graph for the JSON document:
-
 ```bash
 stardog-admin virtual add vehicles.properties
 ```
 4. Run the following command to query the Virtual Graph:
-
 ```bash
 stardog query <db> "select * from <virtual://vehicles> where { ?vehicle a <http://api.stardog.com/vehicles> . ?vehicle <http://api.stardog.com/vehicles#features> ?features . }"
 ```
